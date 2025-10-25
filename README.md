@@ -25,7 +25,7 @@ This CLI provides comprehensive management of Gemini Enterprise resources includ
 
 ```bash
 # Clone the repository
-git clone https://github.com/bcbsma/gemctl-go.git
+git clone https://github.com/vb140772/gemctl-go.git
 cd gemctl-go
 
 # Build the binary

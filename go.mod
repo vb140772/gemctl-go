@@ -1,4 +1,4 @@
-module github.com/bcbsma/gemctl-go
+module github.com/vb140772/gemctl-go
 
 go 1.24.0
 

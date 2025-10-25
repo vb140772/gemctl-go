@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/bcbsma/gemctl-go/internal/client"
+	"github.com/vb140772/gemctl-go/internal/client"
 	"github.com/spf13/cobra"
 )
 

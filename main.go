@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/bcbsma/gemctl-go/internal/cli"
+	"github.com/vb140772/gemctl-go/internal/cli"
 )
 
 const version = "1.0.0"

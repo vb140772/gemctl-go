@@ -46,7 +46,7 @@ changelog:
 
 release:
   github:
-    owner: bcbsma
+    owner: vb140772
     name: gemctl-go
   draft: false
   prerelease: auto
@@ -58,12 +58,12 @@ release:
 
     ### Option 2: Install via Go
     ```bash
-    go install github.com/bcbsma/gemctl-go@{{.Version}}
+    go install github.com/vb140772/gemctl-go@{{.Version}}
     ```
 
     ### Option 3: Build from Source
     ```bash
-    git clone https://github.com/bcbsma/gemctl-go.git
+    git clone https://github.com/vb140772/gemctl-go.git
     cd gemctl-go
     go build -o gemctl .
     ```
