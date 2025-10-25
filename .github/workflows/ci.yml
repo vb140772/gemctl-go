@@ -57,6 +57,7 @@ jobs:
           else
             go build -o gemctl .
           fi
+        shell: bash
 
       - name: Test binary
         run: |
@@ -65,3 +66,4 @@ jobs:
           else
             ./gemctl --version
           fi
+        shell: bash
