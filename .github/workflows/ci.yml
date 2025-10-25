@@ -31,15 +31,16 @@ jobs:
         uses: goreleaser/goreleaser-action@v5
         with:
           distribution: goreleaser
-          version: latest
+          version: v1.26.2
           args: check
 
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        go: ['1.21', '1.22']
+        go: ['1.21', '1.23']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,7 +51,12 @@ jobs:
           go-version: ${{ matrix.go }}
 
       - name: Build
-        run: go build -o gemctl .
+        run: |
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            go build -o gemctl.exe .
+          else
+            go build -o gemctl .
+          fi
 
       - name: Test binary
         run: |
