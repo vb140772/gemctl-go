@@ -1,0 +1,92 @@
+# GoReleaser configuration for gemctl-go
+# Documentation: https://goreleaser.com
+
+version: 2
+
+# Project metadata
+project_name: gemctl
+before:
+  hooks:
+    - go mod tidy
+    - go vet ./...
+    - go test ./...
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+    binary: gemctl
+
+archives:
+  - formats: [tar.gz]
+    name_template: "gemctl_{{.Version}}_{{.Os}}_{{.Arch}}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+checksum:
+  name_template: 'checksums.txt'
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "^build:"
+
+release:
+  github:
+    owner: bcbsma
+    name: gemctl-go
+  draft: false
+  prerelease: auto
+  footer: |
+    ## Installation
+
+    ### Option 1: Download Binary
+    Download the appropriate binary for your platform from the assets above.
+
+    ### Option 2: Install via Go
+    ```bash
+    go install github.com/bcbsma/gemctl-go@{{.Version}}
+    ```
+
+    ### Option 3: Build from Source
+    ```bash
+    git clone https://github.com/bcbsma/gemctl-go.git
+    cd gemctl-go
+    go build -o gemctl .
+    ```
+
+    ## Usage
+    ```bash
+    ./gemctl engines list
+    ./gemctl data-stores list
+    ./gemctl --help
+    ```
+
+    ---
+    Released by [GoReleaser](https://github.com/goreleaser/goreleaser) {{ .Date }}.
+
+announce:
+  skip: "{{gt .Patch 0}}"
+  twitter:
+    enabled: true
+    message_template: |
+      🚀 New release of gemctl-go {{ .Version }} is out! 
+      
+      A powerful Go CLI for managing Google Gemini Enterprise resources.
+      
+      Download: {{ .ReleaseURL }}
+      
+      #GoLang #CLI #Gemini #GoogleCloud

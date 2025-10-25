@@ -47,3 +47,5 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
+# Added by goreleaser init:
+dist/

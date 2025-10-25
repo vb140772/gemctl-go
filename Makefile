@@ -4,7 +4,7 @@
 BINARY_NAME=gemctl
 VERSION=1.0.0
 BUILD_DIR=build
-GO_VERSION=1.21
+GO_VERSION=1.21+
 
 # Default target
 .PHONY: all
@@ -126,7 +126,7 @@ dev-setup:
 check-tools:
 	@echo "Checking required tools..."
 	@command -v go >/dev/null 2>&1 || { echo "Go is required but not installed. Aborting." >&2; exit 1; }
-	@go version | grep -q "go$(GO_VERSION)" || { echo "Go $(GO_VERSION) is required. Current version: $$(go version)"; exit 1; }
+	@command -v goreleaser >/dev/null 2>&1 || { echo "GoReleaser is required but not installed. Run: brew install goreleaser" >&2; exit 1; }
 
 # Show version
 .PHONY: version
@@ -134,15 +134,29 @@ version: build
 	@echo "Version: $(VERSION)"
 	@./$(BUILD_DIR)/$(BINARY_NAME) --version
 
-# Create release packages
+# Create release packages using GoReleaser
 .PHONY: release
-release: build-all
-	@echo "Creating release packages..."
-	@mkdir -p $(BUILD_DIR)/release
-	@cd $(BUILD_DIR) && tar -czf release/$(BINARY_NAME)-$(VERSION)-linux-amd64.tar.gz $(BINARY_NAME)-linux-amd64
-	@cd $(BUILD_DIR) && tar -czf release/$(BINARY_NAME)-$(VERSION)-darwin-amd64.tar.gz $(BINARY_NAME)-darwin-amd64
-	@cd $(BUILD_DIR) && tar -czf release/$(BINARY_NAME)-$(VERSION)-darwin-arm64.tar.gz $(BINARY_NAME)-darwin-arm64
-	@cd $(BUILD_DIR) && zip release/$(BINARY_NAME)-$(VERSION)-windows-amd64.zip $(BINARY_NAME)-windows-amd64.exe
+release: check-tools
+	@echo "Creating release packages with GoReleaser..."
+	goreleaser release --snapshot --clean
+
+# Create a full release (requires git tag)
+.PHONY: release-full
+release-full: check-tools
+	@echo "Creating full release with GoReleaser..."
+	goreleaser release --clean
+
+# Test GoReleaser configuration
+.PHONY: release-test
+release-test: check-tools
+	@echo "Testing GoReleaser configuration..."
+	goreleaser check
+
+# Build only (no release)
+.PHONY: release-build
+release-build: check-tools
+	@echo "Building with GoReleaser..."
+	goreleaser build --snapshot --clean
 
 # Show all available targets
 .PHONY: targets
@@ -166,5 +180,8 @@ targets:
 	@echo "  dev-setup      - Setup development environment"
 	@echo "  check-tools    - Check required tools"
 	@echo "  version        - Show version"
-	@echo "  release        - Create release packages"
+	@echo "  release        - Create snapshot release packages with GoReleaser"
+	@echo "  release-full   - Create full release with GoReleaser (requires git tag)"
+	@echo "  release-test   - Test GoReleaser configuration"
+	@echo "  release-build  - Build only with GoReleaser (no release)"
 	@echo "  targets        - Show this help"

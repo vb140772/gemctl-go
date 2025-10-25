@@ -357,6 +357,47 @@ go build -o gemctl
 GOOS=linux GOARCH=amd64 go build -o gemctl-linux-amd64
 GOOS=windows GOARCH=amd64 go build -o gemctl-windows-amd64.exe
 GOOS=darwin GOARCH=amd64 go build -o gemctl-darwin-amd64
+
+# Build with GoReleaser (cross-platform)
+make release-build
+```
+
+### Release Management
+
+This project uses [GoReleaser](https://goreleaser.com) for automated releases:
+
+```bash
+# Test GoReleaser configuration
+make release-test
+
+# Build snapshot release
+make release-build
+
+# Create snapshot release (local)
+make release
+
+# Create full release (requires git tag)
+make release-full
+```
+
+GoReleaser automatically:
+- Builds for multiple platforms (Linux, Windows, macOS)
+- Creates archives (tar.gz, zip)
+- Generates checksums
+- Creates GitHub releases
+- Publishes to package managers
+
+### Continuous Integration
+
+The project includes GitHub Actions workflows:
+
+- **CI** (`.github/workflows/ci.yml`): Runs tests and builds on multiple platforms
+- **Release** (`.github/workflows/release.yml`): Automated releases when tags are pushed
+
+To create a release:
+```bash
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
 ### Testing
