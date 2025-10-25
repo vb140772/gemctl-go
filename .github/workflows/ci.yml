@@ -31,7 +31,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v5
         with:
           distribution: goreleaser
-          version: v1.26.2
+          version: v2.12.7
           args: check
 
   build:
