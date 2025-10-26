@@ -1,0 +1,43 @@
+name: Update Homebrew Formula
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  update-homebrew:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          distribution: goreleaser
+          version: v2.12.7
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push formula to homebrew-gemctl
+        uses: dhravya/git-auto-commit-action@v9
+        with:
+          commit_message: "Update gemctl to ${{ github.ref_name }}"
+          file_pattern: 'dist/homebrew/**'
+          repository: vb140772/homebrew-gemctl
+          target_branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_user_email: [email protected]
+          commit_user_name: GitHub Actions

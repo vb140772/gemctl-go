@@ -89,5 +89,5 @@ homebrew_casks:
     license: "MIT"
     repository:
       owner: vb140772
-      name: gemctl-go
+      name: homebrew-gemctl  # Separate repository for the tap
     skip_upload: "{{gt .Patch 0}}"  # Only publish major.minor releases
