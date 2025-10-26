@@ -79,17 +79,7 @@ release:
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser) {{ .Date }}.
 
 announce:
-  skip: "{{gt .Patch 0}}"
-  twitter:
-    enabled: true
-    message_template: |
-      🚀 New release of gemctl-go {{ .Version }} is out! 
-      
-      A powerful Go CLI for managing Google Gemini Enterprise resources.
-      
-      Download: {{ .ReleaseURL }}
-      
-      #GoLang #CLI #Gemini #GoogleCloud
+  skip: true
 
 # Homebrew formula publishing (modern approach)
 homebrew_casks:
