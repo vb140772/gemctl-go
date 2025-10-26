@@ -81,13 +81,13 @@ release:
 announce:
   skip: true
 
-# Homebrew formula publishing (modern approach)
-homebrew_casks:
-  - name: gemctl
-    description: "A powerful Go CLI for managing Google Gemini Enterprise resources"
-    homepage: "https://github.com/vb140772/gemctl-go"
-    license: "MIT"
-    repository:
-      owner: vb140772
-      name: homebrew-gemctl  # Separate repository for the tap
-    skip_upload: "{{gt .Patch 0}}"  # Only publish major.minor releases
+# Homebrew formula publishing (disabled - will be manually managed)
+# homebrew_casks:
+#   - name: gemctl
+#     description: "A powerful Go CLI for managing Google Gemini Enterprise resources"
+#     homepage: "https://github.com/vb140772/gemctl-go"
+#     license: "MIT"
+#     repository:
+#       owner: vb140772
+#       name: homebrew-gemctl  # Separate repository for the tap
+#     skip_upload: "{{gt .Patch 0}}"  # Only publish major.minor releases
