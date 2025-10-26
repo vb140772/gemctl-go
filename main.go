@@ -7,7 +7,7 @@ import (
 	"github.com/vb140772/gemctl-go/internal/cli"
 )
 
-const version = "1.0.0"
+var version = "dev" // This will be replaced by ldflags during build
 
 func main() {
 	rootCmd := cli.NewRootCommand(version)
@@ -16,4 +16,3 @@ func main() {
 		os.Exit(1)
 	}
 }
-
