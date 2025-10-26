@@ -90,6 +90,7 @@ brews:
     repository:
       owner: vb140772
       name: homebrew-gemctl
+    directory: Formula
     commit_author:
       name: "GitHub Actions"
       email: "actions@github.com"
