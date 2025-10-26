@@ -14,22 +14,22 @@ cask "gemctl" do
   on_macos do
     on_intel do
       url "https://github.com/vb140772/gemctl-go/releases/download/v#{version}/gemctl_#{version}_darwin_amd64.tar.gz"
-      sha256 "94b105cf933243a4e6f271bd149811b33acadbd8d2ae48405f62acc656778b79"
+      sha256 "ed923183385888af640b2551348a225f177198f223ce7fb07d0b1db3fe764025"
     end
     on_arm do
       url "https://github.com/vb140772/gemctl-go/releases/download/v#{version}/gemctl_#{version}_darwin_arm64.tar.gz"
-      sha256 "46e90f7bde14e6f387fbdd6a784fa879ef583e8e50cff75d00e273a66fb872ba"
+      sha256 "df3b8e1fae6ca2863e0246e97ff0cbc8aeccb99fcafc260d03d9538e40f1216f"
     end
   end
 
   on_linux do
     on_intel do
       url "https://github.com/vb140772/gemctl-go/releases/download/v#{version}/gemctl_#{version}_linux_amd64.tar.gz"
-      sha256 "9d92d0af4ba21b231e4f3be76de9b4eb5cae8fc33c0e6841747002d4a393a822"
+      sha256 "59da844874cd2dbdac8617827868ec8c426c93ca0a7162953ebeb2aa1d37141b"
     end
     on_arm do
       url "https://github.com/vb140772/gemctl-go/releases/download/v#{version}/gemctl_#{version}_linux_arm64.tar.gz"
-      sha256 "9452ea46476f862246c4dbc532f91c4e7159edc2d341fa34f1191cebec37590c"
+      sha256 "3cac3e226c5ab0cc63d71cf3b8db973b12a6ab8b581815449cec2a4f3e8fc34d"
     end
   end
 
