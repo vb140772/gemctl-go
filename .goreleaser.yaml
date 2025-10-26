@@ -81,6 +81,23 @@ release:
 announce:
   skip: true
 
+brews:
+  - name: gemctl
+    tap:
+      owner: vb140772
+      name: homebrew-gemctl
+    folder: Formula
+    homepage: "https://github.com/vb140772/gemctl-go"
+    description: "CLI tool for Gemini Enterprise management"
+    license: "MIT"
+    commit_author:
+      name: "GitHub Actions"
+      email: "actions@github.com"
+    install: |
+      bin.install "gemctl"
+    test: |
+      system "#{bin}/gemctl", "--version"
+      
 # Homebrew formula publishing (disabled - will be manually managed)
 # homebrew_casks:
 #   - name: gemctl
