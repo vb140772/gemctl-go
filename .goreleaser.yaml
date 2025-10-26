@@ -81,16 +81,15 @@ release:
 announce:
   skip: true
 
-# Homebrew formula publishing (disabled until homebrew-gemctl repository is created)
-# To enable, uncomment below and create homebrew-gemctl repository on GitHub
-# homebrew:
-#   - name: gemctl
-#     description: "CLI tool for Gemini Enterprise management"
-#     homepage: "https://github.com/vb140772/gemctl-go"
-#     license: "MIT"
-#     repository:
-#       owner: vb140772
-#       name: homebrew-gemctl
-#     commit_author:
-#       name: "GitHub Actions"
-#       email: "actions@github.com"
+# Homebrew formula publishing
+brews:
+  - name: gemctl
+    description: "CLI tool for Gemini Enterprise management"
+    homepage: "https://github.com/vb140772/gemctl-go"
+    license: "MIT"
+    repository:
+      owner: vb140772
+      name: homebrew-gemctl
+    commit_author:
+      name: "GitHub Actions"
+      email: "actions@github.com"
