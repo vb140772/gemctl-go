@@ -3,7 +3,7 @@ cask "gemctl" do
   name "gemctl"
   desc "A powerful Go CLI for managing Google Gemini Enterprise resources"
   homepage "https://github.com/vb140772/gemctl-go"
-  version "1.1.0"
+  version "1.2.0"
 
   livecheck do
     skip "Auto-generated on release."
@@ -14,22 +14,22 @@ cask "gemctl" do
   on_macos do
     on_intel do
       url "https://github.com/vb140772/gemctl-go/releases/download/v#{version}/gemctl_#{version}_darwin_amd64.tar.gz"
-      sha256 "270784e5ff9fcacb1bb47773d8d8950d29a4afe7a2c1f94f2ee25d7e920cff47"
+      sha256 "94b105cf933243a4e6f271bd149811b33acadbd8d2ae48405f62acc656778b79"
     end
     on_arm do
       url "https://github.com/vb140772/gemctl-go/releases/download/v#{version}/gemctl_#{version}_darwin_arm64.tar.gz"
-      sha256 "a2c886edca410a12c7cac66b13a60dba36da329443e84b0359a9c562d5c49442"
+      sha256 "46e90f7bde14e6f387fbdd6a784fa879ef583e8e50cff75d00e273a66fb872ba"
     end
   end
 
   on_linux do
     on_intel do
       url "https://github.com/vb140772/gemctl-go/releases/download/v#{version}/gemctl_#{version}_linux_amd64.tar.gz"
-      sha256 "ad4c963f8daf7cf67cdcb4cc84c1b8dc12133782e0473aae403a779628968603"
+      sha256 "9d92d0af4ba21b231e4f3be76de9b4eb5cae8fc33c0e6841747002d4a393a822"
     end
     on_arm do
       url "https://github.com/vb140772/gemctl-go/releases/download/v#{version}/gemctl_#{version}_linux_arm64.tar.gz"
-      sha256 "e2238afe94ea4094754751798820b97d562e502a64947bb77effe142d9a8a66c"
+      sha256 "9452ea46476f862246c4dbc532f91c4e7159edc2d341fa34f1191cebec37590c"
     end
   end
 
