@@ -23,6 +23,23 @@ This CLI provides comprehensive management of Gemini Enterprise resources includ
 
 ### Installation
 
+#### Option 1: Homebrew (Recommended)
+
+```bash
+# Add the tap
+brew tap vb140772/gemctl
+
+# Install gemctl
+brew install gemctl
+```
+
+Alternatively, you can install directly from the tap in one command:
+```bash
+brew install vb140772/gemctl/gemctl
+```
+
+#### Option 2: From Source
+
 ```bash
 # Clone the repository
 git clone https://github.com/vb140772/gemctl-go.git
@@ -34,6 +51,10 @@ go build -o gemctl
 # Or install globally
 go install
 ```
+
+#### Option 3: Download Release Binary
+
+Download the latest release from the [GitHub Releases](https://github.com/vb140772/gemctl-go/releases) page.
 
 ### Authentication Setup
 
