@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -253,6 +254,50 @@ func outputAgentDetailsTable(agent *client.Agent) error {
 		fmt.Printf("Updated: %s\n", agent.UpdateTime)
 	}
 
+	return nil
+}
+
+// outputEngineFeatures outputs engine features in the specified format.
+func outputEngineFeatures(engine *client.Engine, format string) error {
+	if engine == nil {
+		return fmt.Errorf("engine is nil")
+	}
+
+	switch format {
+	case "json":
+		return outputJSON(engine.Features, format)
+	case "yaml":
+		return outputYAML(engine.Features)
+	default:
+		return outputEngineFeaturesTable(engine)
+	}
+}
+
+func outputEngineFeaturesTable(engine *client.Engine) error {
+	features := engine.Features
+	if len(features) == 0 {
+		fmt.Println("No feature configuration found for this engine.")
+		return nil
+	}
+
+	keys := sortedFeatureKeys(features)
+	enabled := 0
+
+	fmt.Println("=" + strings.Repeat("=", 80))
+	fmt.Printf("Features for engine: %s\n", engine.DisplayName)
+	fmt.Println("=" + strings.Repeat("=", 80))
+	fmt.Printf("%-40s %-20s\n", "FEATURE", "STATE")
+	fmt.Println("-" + strings.Repeat("-", 80))
+
+	for _, key := range keys {
+		state := features[key]
+		if strings.Contains(state, "ON") {
+			enabled++
+		}
+		fmt.Printf("%-40s %-20s\n", key, renderFeatureState(state))
+	}
+
+	fmt.Printf("\nEnabled: %d/%d\n", enabled, len(features))
 	return nil
 }
 
@@ -538,4 +583,30 @@ func truncateString(value string, max int) string {
 		return value[:max]
 	}
 	return value[:max-3] + "..."
+}
+
+func sortedFeatureKeys(features map[string]string) []string {
+	keys := make([]string, 0, len(features))
+	for key := range features {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+func renderFeatureState(state string) string {
+	switch state {
+	case client.EngineFeatureStateOn:
+		return "ON"
+	case client.EngineFeatureStateOff:
+		return "OFF"
+	default:
+		upper := strings.ToUpper(state)
+		switch upper {
+		case "ON", "OFF":
+			return upper
+		default:
+			return state
+		}
+	}
 }

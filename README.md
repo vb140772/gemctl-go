@@ -76,6 +76,12 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account-key.json"
 # List agents registered to an engine
 ./gemctl engines agents list my-engine --project=my-project --location=us
 
+# Enable agent gallery feature
+./gemctl engines features enable my-engine agent-gallery
+
+# Disable agent gallery feature
+./gemctl engines features disable my-engine agent-gallery
+
 # List data stores
 ./gemctl data-stores list --project=my-project --location=us
 
@@ -162,6 +168,19 @@ gemctl engines create my-engine "My Search Engine"
 
 #### `engines delete`
 Delete a search engine.
+
+```bash
+gemctl engines delete ENGINE_ID [--force]
+```
+
+**Examples:**
+```bash
+# Delete with confirmation
+gemctl engines delete my-engine
+
+# Delete without confirmation
+gemctl engines delete my-engine --force
+```
 #### `engines agents`
 Manage Dialogflow agents connected to an engine's default assistant.
 
@@ -208,19 +227,42 @@ Delete an agent registration.
 gemctl engines agents delete ENGINE_ID AGENT_ID [--force]
 ```
 
+#### `engines features`
+Manage engine feature flags such as `agent-gallery`, `prompt-gallery`, or `model-selector`.
+
+##### `engines features list`
+List all feature states for an engine.
 
 ```bash
-gemctl engines delete ENGINE_ID [--force]
+gemctl engines features list ENGINE_ID [--project PROJECT_ID] [--location LOCATION] [--format FORMAT]
 ```
 
-**Examples:**
+##### `engines features enable`
+Enable one or more features.
+
 ```bash
-# Delete with confirmation
-gemctl engines delete my-engine
-
-# Delete without confirmation
-gemctl engines delete my-engine --force
+gemctl engines features enable ENGINE_ID FEATURE [FEATURE...]
 ```
+
+You can also place the engine at the end for convenience:
+
+```bash
+gemctl engines features enable FEATURE [FEATURE...] ENGINE_ID
+```
+
+##### `engines features disable`
+Disable one or more features.
+
+```bash
+gemctl engines features disable ENGINE_ID FEATURE [FEATURE...]
+```
+
+Engine-last ordering is also supported:
+
+```bash
+gemctl engines features disable FEATURE [FEATURE...] ENGINE_ID
+```
+
 
 ### Data Stores Commands
 
