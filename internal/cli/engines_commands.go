@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/vb140772/gemctl-go/internal/client"
 	"github.com/spf13/cobra"
+	"github.com/vb140772/gemctl-go/internal/client"
 )
 
 // NewEnginesListCommand creates the engines list command
@@ -17,7 +17,7 @@ func NewEnginesListCommand() *cobra.Command {
 
 Examples:
   gemctl engines list
-  gemctl engines list --project-id=my-project --location=us
+  gemctl engines list --project=my-project --location=us
   gemctl engines list --use-service-account`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			config, err := getConfigFromFlags(cmd)
@@ -189,7 +189,7 @@ Examples:
 				fmt.Printf("Name: %s\n", engine.Name)
 				fmt.Printf("Solution Type: %s\n", engine.SolutionType)
 				fmt.Print("\nAre you sure you want to delete this engine? (y/N): ")
-				
+
 				var response string
 				fmt.Scanln(&response)
 				if response != "y" && response != "Y" {

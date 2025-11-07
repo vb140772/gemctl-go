@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
@@ -16,31 +17,32 @@ import (
 
 // Config holds the configuration for the Gemini client
 type Config struct {
-	ProjectID           string
-	Location            string
-	Collection          string
-	UseServiceAccount   bool
-	Format              string
+	ProjectID         string
+	Location          string
+	Collection        string
+	UseServiceAccount bool
+	Format            string
 }
 
 // GeminiClient handles interactions with the Gemini Enterprise API
 type GeminiClient struct {
-	service *discoveryengine.Service
-	config  *Config
+	service    *discoveryengine.Service
+	config     *Config
+	httpClient *http.Client
 }
 
 // Engine represents a Gemini Enterprise engine
 type Engine struct {
-	Name                string                 `json:"name"`
-	DisplayName         string                 `json:"displayName"`
-	SolutionType        string                 `json:"solutionType"`
-	IndustryVertical    string                 `json:"industryVertical"`
-	AppType             string                 `json:"appType"`
-	CreateTime          string                 `json:"createTime"`
-	DataStoreIds        []string               `json:"dataStoreIds,omitempty"`
-	SearchEngineConfig  *SearchEngineConfig    `json:"searchEngineConfig,omitempty"`
-	CommonConfig        map[string]interface{} `json:"commonConfig,omitempty"`
-	Features            map[string]string      `json:"features,omitempty"`
+	Name               string                 `json:"name"`
+	DisplayName        string                 `json:"displayName"`
+	SolutionType       string                 `json:"solutionType"`
+	IndustryVertical   string                 `json:"industryVertical"`
+	AppType            string                 `json:"appType"`
+	CreateTime         string                 `json:"createTime"`
+	DataStoreIds       []string               `json:"dataStoreIds,omitempty"`
+	SearchEngineConfig *SearchEngineConfig    `json:"searchEngineConfig,omitempty"`
+	CommonConfig       map[string]interface{} `json:"commonConfig,omitempty"`
+	Features           map[string]string      `json:"features,omitempty"`
 }
 
 // SearchEngineConfig represents search engine configuration
@@ -54,13 +56,13 @@ type DataStore struct {
 	Name                     string                 `json:"name"`
 	DisplayName              string                 `json:"displayName"`
 	IndustryVertical         string                 `json:"industryVertical"`
-	ContentConfig           string                 `json:"contentConfig"`
-	CreateTime              string                 `json:"createTime"`
-	SolutionTypes           []string               `json:"solutionTypes,omitempty"`
-	AclEnabled              bool                   `json:"aclEnabled,omitempty"`
-	BillingEstimation       *BillingEstimation     `json:"billingEstimation,omitempty"`
+	ContentConfig            string                 `json:"contentConfig"`
+	CreateTime               string                 `json:"createTime"`
+	SolutionTypes            []string               `json:"solutionTypes,omitempty"`
+	AclEnabled               bool                   `json:"aclEnabled,omitempty"`
+	BillingEstimation        *BillingEstimation     `json:"billingEstimation,omitempty"`
 	DocumentProcessingConfig map[string]interface{} `json:"documentProcessingConfig,omitempty"`
-	Schema                  map[string]interface{} `json:"schema,omitempty"`
+	Schema                   map[string]interface{} `json:"schema,omitempty"`
 }
 
 // BillingEstimation represents billing information
@@ -71,18 +73,18 @@ type BillingEstimation struct {
 
 // Document represents a document in a data store
 type Document struct {
-	ID         string                 `json:"id"`
-	Content    map[string]interface{} `json:"content"`
-	IndexTime  string                 `json:"indexTime"`
+	ID        string                 `json:"id"`
+	Content   map[string]interface{} `json:"content"`
+	IndexTime string                 `json:"indexTime"`
 }
 
 // CreateResult represents the result of a create operation
 type CreateResult struct {
-	EngineName string `json:"engine_name,omitempty"`
-	DataStoreName string `json:"data_store_name,omitempty"`
+	EngineName      string                 `json:"engine_name,omitempty"`
+	DataStoreName   string                 `json:"data_store_name,omitempty"`
 	ImportOperation map[string]interface{} `json:"import_operation,omitempty"`
-	Status string `json:"status"`
-	Error  string `json:"error,omitempty"`
+	Status          string                 `json:"status"`
+	Error           string                 `json:"error,omitempty"`
 }
 
 // DeleteResult represents the result of a delete operation
@@ -122,34 +124,56 @@ func NewGeminiClient(config *Config) (*GeminiClient, error) {
 		baseURL = fmt.Sprintf("https://%s-discoveryengine.googleapis.com/", regionPrefix)
 	}
 
+	requiredScopes := []string{
+		discoveryengine.CloudPlatformScope,
+		discoveryengine.CloudSearchQueryScope,
+		discoveryengine.DiscoveryengineAssistReadwriteScope,
+		discoveryengine.DiscoveryengineReadwriteScope,
+	}
+
+	opts := []option.ClientOption{
+		option.WithEndpoint(baseURL),
+	}
+
+	var httpClient *http.Client
+
 	if config.UseServiceAccount {
 		// Use Application Default Credentials
-		service, err = discoveryengine.NewService(ctx, 
-			option.WithScopes(discoveryengine.CloudPlatformScope),
-			option.WithEndpoint(baseURL))
+		creds, err := google.FindDefaultCredentials(ctx, requiredScopes...)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create service with ADC: %w", err)
+			return nil, fmt.Errorf("failed to find default credentials: %w", err)
 		}
+
+		if creds.ProjectID != "" && config.ProjectID == "" {
+			config.ProjectID = creds.ProjectID
+		}
+
+		httpClient = oauth2.NewClient(ctx, creds.TokenSource)
+		opts = append(opts, option.WithTokenSource(creds.TokenSource))
 	} else {
 		// Use user credentials via gcloud auth print-access-token
 		tokenSource, err := getUserTokenSource()
 		if err != nil {
 			return nil, fmt.Errorf("failed to get user token source: %w", err)
 		}
-		
-		// Create service with user token source and quota project
-		service, err = discoveryengine.NewService(ctx, 
-			option.WithTokenSource(tokenSource),
-			option.WithQuotaProject(config.ProjectID),
-			option.WithEndpoint(baseURL))
-		if err != nil {
-			return nil, fmt.Errorf("failed to create service with user credentials: %w", err)
+
+		httpClient = oauth2.NewClient(ctx, tokenSource)
+		opts = append(opts, option.WithTokenSource(tokenSource))
+
+		if config.ProjectID != "" {
+			opts = append(opts, option.WithQuotaProject(config.ProjectID))
 		}
 	}
 
+	service, err = discoveryengine.NewService(ctx, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create discoveryengine service: %w", err)
+	}
+
 	return &GeminiClient{
-		service: service,
-		config:  config,
+		service:    service,
+		config:     config,
+		httpClient: httpClient,
 	}, nil
 }
 
@@ -167,7 +191,7 @@ func (g *gcloudTokenSource) Token() (*oauth2.Token, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get access token from gcloud: %w", err)
 	}
-	
+
 	token := strings.TrimSpace(string(output))
 	return &oauth2.Token{
 		AccessToken: token,
@@ -184,7 +208,7 @@ func getDefaultProject() (string, error) {
 	if project := os.Getenv("GCLOUD_PROJECT"); project != "" {
 		return project, nil
 	}
-	
+
 	// Try gcloud config
 	cmd := exec.Command("gcloud", "config", "get-value", "project")
 	output, err := cmd.Output()
@@ -194,14 +218,14 @@ func getDefaultProject() (string, error) {
 			return project, nil
 		}
 	}
-	
+
 	// Try from credentials
 	ctx := context.Background()
 	creds, err := google.FindDefaultCredentials(ctx, discoveryengine.CloudPlatformScope)
 	if err == nil && creds.ProjectID != "" {
 		return creds.ProjectID, nil
 	}
-	
+
 	return "", fmt.Errorf("no project ID found in environment variables, gcloud config, or credentials")
 }
 

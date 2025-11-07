@@ -13,6 +13,7 @@ This CLI provides comprehensive management of Gemini Enterprise resources includ
 
 - **gcloud-style commands** for familiar developer experience
 - **Complete resource management** (engines, data stores, documents)
+- **Dialogflow agent management** for Gemini Enterprise assistants
 - **Multiple authentication methods** (user credentials + service accounts)
 - **Regional endpoint support** (global, us, eu)
 - **Rich output formats** (table, JSON, YAML)
@@ -70,13 +71,16 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account-key.json"
 
 ```bash
 # List engines
-./gemctl engines list --project-id=my-project --location=us
+./gemctl engines list --project=my-project --location=us
+
+# List agents registered to an engine
+./gemctl engines agents list my-engine --project=my-project --location=us
 
 # List data stores
-./gemctl data-stores list --project-id=my-project --location=us
+./gemctl data-stores list --project=my-project --location=us
 
 # Describe an engine
-./gemctl engines describe my-engine --project-id=my-project --location=us
+./gemctl engines describe my-engine --project=my-project --location=us
 
 # Create a search engine
 ./gemctl engines create my-engine "My Search Engine" datastore1 datastore2
@@ -91,7 +95,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account-key.json"
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `--project-id` | Google Cloud project ID | From gcloud config or $GOOGLE_CLOUD_PROJECT |
+| `--project` | Google Cloud project ID | From gcloud config or $GOOGLE_CLOUD_PROJECT |
 | `--location` | Region (us, us-central1, global) | From $AGENTSPACE_LOCATION or `us` |
 | `--format` | Output format (table, json, yaml) | `table` |
 | `--collection` | Collection ID | `default_collection` |
@@ -103,7 +107,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account-key.json"
 List all engines in a project.
 
 ```bash
-gemctl engines list [--project-id PROJECT_ID] [--location LOCATION] [--format FORMAT]
+gemctl engines list [--project PROJECT_ID] [--location LOCATION] [--format FORMAT]
 ```
 
 **Examples:**
@@ -112,17 +116,17 @@ gemctl engines list [--project-id PROJECT_ID] [--location LOCATION] [--format FO
 gemctl engines list
 
 # With explicit flags
-gemctl engines list --project-id=my-project --location=us
+gemctl engines list --project=my-project --location=us
 
 # JSON format
-gemctl engines list --project-id=my-project --location=us --format=json
+gemctl engines list --project=my-project --location=us --format=json
 ```
 
 #### `engines describe`
 Describe a specific engine.
 
 ```bash
-gemctl engines describe ENGINE_ID [--project-id PROJECT_ID] [--location LOCATION] [--format FORMAT] [--full]
+gemctl engines describe ENGINE_ID [--project PROJECT_ID] [--location LOCATION] [--format FORMAT] [--full]
 ```
 
 **Examples:**
@@ -158,6 +162,52 @@ gemctl engines create my-engine "My Search Engine"
 
 #### `engines delete`
 Delete a search engine.
+#### `engines agents`
+Manage Dialogflow agents connected to an engine's default assistant.
+
+##### `engines agents list`
+List all registered agents for an engine.
+
+```bash
+gemctl engines agents list ENGINE_ID [--project PROJECT_ID] [--location LOCATION] [--format FORMAT]
+```
+
+##### `engines agents describe`
+Show full details for a specific agent registration.
+
+```bash
+gemctl engines agents describe ENGINE_ID AGENT_ID [--project PROJECT_ID] [--location LOCATION] [--format FORMAT]
+```
+
+##### `engines agents create`
+Register a Dialogflow agent with an engine assistant.
+
+```bash
+gemctl engines agents create ENGINE_ID \
+  --display-name="DISPLAY_NAME" \
+  --description="DESCRIPTION" \
+  --reasoning-engine=projects/PROJECT_ID/locations/LOCATION/collections/COLLECTION/engines/ENGINE_ID \
+  --dialogflow-agent=projects/DF_PROJECT/locations/DF_LOCATION/agents/DF_AGENT_ID
+```
+
+You can also supply the Dialogflow agent using `--dialogflow-project-id`, `--dialogflow-location`, and `--dialogflow-agent-id`. Optional flags include `--icon-uri`, `--icon-content`, and `--format`.
+
+##### `engines agents update`
+Update an existing agent registration.
+
+```bash
+gemctl engines agents update ENGINE_ID AGENT_ID [flags]
+```
+
+Use flags such as `--display-name`, `--description`, `--reasoning-engine`, `--icon-uri`, or the Dialogflow agent flags to modify the registration. `--clear-icon` removes the icon.
+
+##### `engines agents delete`
+Delete an agent registration.
+
+```bash
+gemctl engines agents delete ENGINE_ID AGENT_ID [--force]
+```
+
 
 ```bash
 gemctl engines delete ENGINE_ID [--force]
@@ -178,14 +228,14 @@ gemctl engines delete my-engine --force
 List all data stores in a project.
 
 ```bash
-gemctl data-stores list [--project-id PROJECT_ID] [--location LOCATION] [--format FORMAT]
+gemctl data-stores list [--project PROJECT_ID] [--location LOCATION] [--format FORMAT]
 ```
 
 #### `data-stores describe`
 Describe a specific data store.
 
 ```bash
-gemctl data-stores describe DATA_STORE_ID [--project-id PROJECT_ID] [--location LOCATION] [--format FORMAT]
+gemctl data-stores describe DATA_STORE_ID [--project PROJECT_ID] [--location LOCATION] [--format FORMAT]
 ```
 
 #### `data-stores create-from-gcs`
@@ -231,7 +281,7 @@ Uses `gcloud auth print-access-token` - best for interactive use and development
 gcloud auth login
 
 # Use CLI (no additional flags needed)
-gemctl engines list --project-id=my-project
+gemctl engines list --project=my-project
 ```
 
 ### Method 2: Service Account (Recommended for automation)
@@ -240,11 +290,11 @@ Uses Application Default Credentials (ADC) - best for CI/CD and automated script
 ```bash
 # Option A: Service account key file
 export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account-key.json"
-gemctl engines list --project-id=my-project --use-service-account
+gemctl engines list --project=my-project --use-service-account
 
 # Option B: Application default credentials
 gcloud auth application-default login
-gemctl engines list --project-id=my-project --use-service-account
+gemctl engines list --project=my-project --use-service-account
 ```
 
 ### Required IAM Permissions
@@ -306,42 +356,42 @@ Configuration-friendly format for deployment scripts.
 
 ```bash
 # List engines
-gemctl engines list --project-id=my-project --location=us
+gemctl engines list --project=my-project --location=us
 
 # List data stores
-gemctl data-stores list --project-id=my-project --location=us
+gemctl data-stores list --project=my-project --location=us
 
 # With service account
-gemctl engines list --project-id=my-project --location=us --use-service-account
+gemctl engines list --project=my-project --location=us --use-service-account
 ```
 
 ### 2. Export Configuration for Deployment
 
 ```bash
 # Export full engine configuration
-gemctl engines describe my-engine --project-id=my-project --location=us --full > engine-config.json
+gemctl engines describe my-engine --project=my-project --location=us --full > engine-config.json
 
 # With service account
-gemctl engines describe my-engine --project-id=my-project --location=us --use-service-account --full > engine-config.json
+gemctl engines describe my-engine --project=my-project --location=us --use-service-account --full > engine-config.json
 ```
 
 ### 3. Automation/Scripting
 
 ```bash
 # Get JSON output for parsing
-ENGINE_COUNT=$(gemctl engines list --project-id=my-project --location=us --format=json | jq 'length')
+ENGINE_COUNT=$(gemctl engines list --project=my-project --location=us --format=json | jq 'length')
 echo "Found $ENGINE_COUNT engines"
 
 # List all engine names
-gemctl engines list --project-id=my-project --location=us --format=json | jq -r '.[].displayName'
+gemctl engines list --project=my-project --location=us --format=json | jq -r '.[].displayName'
 ```
 
 ### 4. Backup All Engines
 
 ```bash
 # Get all engine configurations
-for engine in $(gemctl engines list --project-id=my-project --location=us --format=json | jq -r '.[].name | split("/") | .[-1]'); do
-  gemctl engines describe "$engine" --project-id=my-project --location=us --full > "backup-${engine}.json"
+for engine in $(gemctl engines list --project=my-project --location=us --format=json | jq -r '.[].name | split("/") | .[-1]'); do
+  gemctl engines describe "$engine" --project=my-project --location=us --full > "backup-${engine}.json"
 done
 ```
 

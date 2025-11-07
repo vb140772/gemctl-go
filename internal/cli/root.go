@@ -17,12 +17,12 @@ This CLI provides gcloud-style commands for managing Gemini Enterprise resources
 - Documents
 
 Authentication: Uses gcloud auth by default, or --use-service-account for ADC.
-Project: Set via --project-id, GOOGLE_CLOUD_PROJECT env var, or gcloud config.`,
+Project: Set via --project, GOOGLE_CLOUD_PROJECT env var, or gcloud config.`,
 		Version: version,
 	}
 
 	// Add global flags
-	rootCmd.PersistentFlags().StringP("project-id", "p", "", "Google Cloud project ID (can also be set via GOOGLE_CLOUD_PROJECT env var)")
+	rootCmd.PersistentFlags().StringP("project", "p", "", "Google Cloud project ID (can also be set via GOOGLE_CLOUD_PROJECT env var)")
 	rootCmd.PersistentFlags().StringP("location", "l", "", "Location for resources (e.g., us, us-central1, global) (can also be set via AGENTSPACE_LOCATION env var)")
 	rootCmd.PersistentFlags().StringP("format", "f", "table", "Output format (table, json, yaml)")
 	rootCmd.PersistentFlags().StringP("collection", "c", "default_collection", "Collection ID")

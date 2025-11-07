@@ -16,6 +16,7 @@ func NewEnginesCommand() *cobra.Command {
 	enginesCmd.AddCommand(NewEnginesDescribeCommand())
 	enginesCmd.AddCommand(NewEnginesCreateCommand())
 	enginesCmd.AddCommand(NewEnginesDeleteCommand())
+	enginesCmd.AddCommand(NewEnginesAgentsCommand())
 
 	return enginesCmd
 }
