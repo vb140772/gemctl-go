@@ -594,6 +594,61 @@ func sortedFeatureKeys(features map[string]string) []string {
 	return keys
 }
 
+func outputSnapshotDiff(diff client.SnapshotDiff, format string) error {
+	switch format {
+	case "json":
+		return outputJSON(diff, format)
+	case "yaml":
+		return outputYAML(diff)
+	default:
+		if diff.IsEmpty() {
+			fmt.Println("No differences found.")
+			return nil
+		}
+
+		if len(diff.MetadataChanges) > 0 {
+			fmt.Println("Metadata changes:")
+			for _, change := range diff.MetadataChanges {
+				fmt.Printf("  %s: %v -> %v\n", change.Field, change.Old, change.New)
+			}
+			fmt.Println()
+		}
+
+		if len(diff.EngineChanges) > 0 {
+			fmt.Println("Engine changes:")
+			for _, change := range diff.EngineChanges {
+				fmt.Printf("  %s: %v -> %v\n", change.Field, change.Old, change.New)
+			}
+			fmt.Println()
+		}
+
+		if len(diff.FeatureChanges) > 0 {
+			fmt.Println("Feature changes:")
+			for _, change := range diff.FeatureChanges {
+				fmt.Printf("  %s: %s -> %s\n", change.Feature, change.Old, change.New)
+			}
+			fmt.Println()
+		}
+
+		if len(diff.AgentChanges) > 0 {
+			fmt.Println("Agent changes:")
+			for _, change := range diff.AgentChanges {
+				switch change.ChangeType {
+				case client.AgentDiffAdded:
+					fmt.Printf("  + %s (added)\n", change.Key)
+				case client.AgentDiffRemoved:
+					fmt.Printf("  - %s (removed)\n", change.Key)
+				case client.AgentDiffUpdated:
+					fmt.Printf("  ~ %s (updated)\n", change.Key)
+				default:
+					fmt.Printf("  ? %s (%s)\n", change.Key, change.ChangeType)
+				}
+			}
+		}
+		return nil
+	}
+}
+
 func renderFeatureState(state string) string {
 	switch state {
 	case client.EngineFeatureStateOn:

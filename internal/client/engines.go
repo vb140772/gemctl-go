@@ -233,5 +233,12 @@ func convertEngine(engine *discoveryengine.GoogleCloudDiscoveryengineV1Engine) *
 		result.CommonConfig["companyName"] = engine.CommonConfig.CompanyName
 	}
 
+	if engine.SearchEngineConfig != nil {
+		result.SearchEngineConfig = &SearchEngineConfig{
+			SearchTier:   engine.SearchEngineConfig.SearchTier,
+			SearchAddOns: append([]string{}, engine.SearchEngineConfig.SearchAddOns...),
+		}
+	}
+
 	return result
 }

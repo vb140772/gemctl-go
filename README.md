@@ -76,6 +76,15 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account-key.json"
 # List agents registered to an engine
 ./gemctl engines agents list my-engine --project=my-project --location=us
 
+# Create an engine snapshot
+./gemctl engines snapshot create my-engine --output=backup.json
+
+# Diff snapshot against live configuration
+./gemctl engines snapshot diff backup.json --engine my-engine
+
+# Restore snapshot (dry-run)
+./gemctl engines snapshot restore backup.json my-engine --dry-run
+
 # Enable agent gallery feature
 ./gemctl engines features enable my-engine agent-gallery
 
@@ -262,6 +271,34 @@ Engine-last ordering is also supported:
 ```bash
 gemctl engines features disable FEATURE [FEATURE...] ENGINE_ID
 ```
+
+#### `engines snapshot`
+Manage engine snapshots for backup, diff, and restore scenarios.
+
+##### `engines snapshot create`
+Create a snapshot file containing engine configuration, features, agents, and metadata.
+
+```bash
+gemctl engines snapshot create ENGINE_ID [--output PATH] [--notes TEXT]
+```
+
+##### `engines snapshot diff`
+Compare two snapshots or compare a snapshot to the current engine state.
+
+```bash
+gemctl engines snapshot diff SNAPSHOT_A SNAPSHOT_B
+gemctl engines snapshot diff SNAPSHOT --engine ENGINE_ID
+```
+
+##### `engines snapshot restore`
+Restore a snapshot to create a new engine or rollback an existing one. A diff preview is shown before applying changes.
+
+```bash
+gemctl engines snapshot restore SNAPSHOT_PATH [ENGINE_ID]
+gemctl engines snapshot restore SNAPSHOT_PATH --new-engine-id NEW_ID --allow-create
+```
+
+Snapshots include metadata (engine name, IDs, project/location, timestamp, notes) and capture feature flags plus Dialogflow agent registrations. The diff command can compare two snapshots or show planned changes before a restore, making it useful for rollbacks, audits, or cloning engines across projects.
 
 
 ### Data Stores Commands
