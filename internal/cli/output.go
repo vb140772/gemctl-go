@@ -665,3 +665,35 @@ func renderFeatureState(state string) string {
 		}
 	}
 }
+
+func outputWorkforceIdentity(cfg *client.WorkforceIdentityConfig, format string) error {
+	switch format {
+	case "json":
+		return outputJSON(cfg, format)
+	case "yaml":
+		return outputYAML(cfg)
+	default:
+		fmt.Println("=" + strings.Repeat("=", 60))
+		fmt.Println("Workforce Identity Configuration")
+		fmt.Println("=" + strings.Repeat("=", 60))
+
+		if cfg == nil || (cfg.IdpType == "" && cfg.WorkforcePoolName == "") {
+			fmt.Println("Workforce identity is not configured for this project/location.")
+			return nil
+		}
+
+		fmt.Printf("IDP Type: %s\n", cfg.IdpType)
+		fmt.Printf("Workforce Resource: %s\n", valueOrPlaceholder(cfg.WorkforcePoolName))
+		fmt.Printf("Workforce Location: %s\n", valueOrPlaceholder(cfg.WorkforceLocation))
+		fmt.Printf("Workforce ID: %s\n", valueOrPlaceholder(cfg.WorkforcePoolID))
+		fmt.Printf("Workforce Provider ID: %s\n", valueOrPlaceholder(cfg.WorkforceProvider))
+		return nil
+	}
+}
+
+func valueOrPlaceholder(value string) string {
+	if strings.TrimSpace(value) == "" {
+		return "(not set)"
+	}
+	return value
+}

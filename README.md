@@ -85,6 +85,12 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account-key.json"
 # Restore snapshot (dry-run)
 ./gemctl engines snapshot restore backup.json my-engine --dry-run
 
+# Show workforce identity configuration
+./gemctl engines workforce show
+
+# Link workforce identity pool
+./gemctl engines workforce set --pool=locations/global/workforcePools/my-pool
+
 # Enable agent gallery feature
 ./gemctl engines features enable my-engine agent-gallery
 
@@ -270,6 +276,25 @@ Engine-last ordering is also supported:
 
 ```bash
 gemctl engines features disable FEATURE [FEATURE...] ENGINE_ID
+```
+
+#### `engines workforce`
+Manage workforce identity pool configuration for the current project/location.
+
+##### `engines workforce show`
+Display the configured workforce identity information.
+
+```bash
+gemctl engines workforce show
+```
+
+##### `engines workforce set`
+Link or clear a workforce identity pool.
+
+```bash
+gemctl engines workforce set --resource=locations/global/workforcePools/POOL_ID/providers/PROVIDER_ID
+gemctl engines workforce set --workforce-id=POOL_ID --provider-id=PROVIDER_ID
+gemctl engines workforce set --clear
 ```
 
 #### `engines snapshot`
