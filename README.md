@@ -89,7 +89,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account-key.json"
 ./gemctl engines workforce show
 
 # Link workforce identity pool
-./gemctl engines workforce set --pool=locations/global/workforcePools/my-pool
+./gemctl engines workforce set --resource=locations/global/workforcePools/my-pool/providers/provider-id
 
 # Enable agent gallery feature
 ./gemctl engines features enable my-engine agent-gallery
@@ -288,6 +288,8 @@ Display the configured workforce identity information.
 gemctl engines workforce show
 ```
 
+Outputs include the configured IDP type, workforce resource, location, pool ID, and provider ID (if present).
+
 ##### `engines workforce set`
 Link or clear a workforce identity pool.
 
@@ -296,6 +298,8 @@ gemctl engines workforce set --resource=locations/global/workforcePools/POOL_ID/
 gemctl engines workforce set --workforce-id=POOL_ID --provider-id=PROVIDER_ID
 gemctl engines workforce set --clear
 ```
+
+Use `--workforce-location` to override the default `locations/global` when building the resource from component flags.
 
 #### `engines snapshot`
 Manage engine snapshots for backup, diff, and restore scenarios.
