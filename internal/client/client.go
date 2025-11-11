@@ -29,6 +29,7 @@ type GeminiClient struct {
 	service    *discoveryengine.Service
 	config     *Config
 	httpClient *http.Client
+	basePath   string
 }
 
 // Engine represents a Gemini Enterprise engine

@@ -73,11 +73,11 @@ Examples:
 			engineName := constructEngineName(engineID, config)
 
 			if full {
-				config, err := geminiClient.GetEngineFullConfig(engineName)
+				fullConfig, err := geminiClient.GetEngineFullConfig(engineName)
 				if err != nil {
 					return fmt.Errorf("failed to get engine full config: %w", err)
 				}
-				return outputJSON(config, "json")
+				return outputJSON(fullConfig, "json")
 			}
 
 			engine, err := geminiClient.GetEngineDetails(engineName)

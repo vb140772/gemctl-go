@@ -43,7 +43,6 @@ func (c *GeminiClient) GetEngineFullConfig(engineName string) (map[string]interf
 	if err != nil {
 		return nil, err
 	}
-
 	config := map[string]interface{}{
 		"engine":      engine,
 		"data_stores": []interface{}{},
